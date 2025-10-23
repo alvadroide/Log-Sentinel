@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Sentinel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Log Sentinel 🔎</h1>
+        <p>Sube un archivo de log (ej. `auth.log`) para analizar intentos de acceso fallidos.</p>
+    </header>
+
+    <main>
+        <div class="upload-section">
+            <form id="upload-form">
+                <input type="file" id="log-file-input" name="log_file" accept=".log, .txt" required>
+                <button type="submit">Analizar</button>
+            </form>
+            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+            <div id="error-message" class="error"></div>
+        </div>
+
+        <div id="dashboard" class="dashboard-container" style="display: none;">
+            
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Total de Fallos</h3>
+                    <div id="total-failures" class="card-value">---</div>
+                </div>
+                <div class="card">
+                    <h3>IP Más Ofensiva</h3>
+                    <div id="top-attacker" class="card-value">---</div>
+                </div>
+                <div class="card">
+                    <h3>Usuario Más Atacado</h3>
+                    <div id="top-user" class="card-value">---</div>
+                </div>
+            </div>
+
+            <div class="charts-row">
+                <div class="chart-container card">
+                    <h3>Top 5 IPs Atacantes</h3>
+                    <canvas id="ip-chart"></canvas>
+                </div>
+                <div class="map-container card">
+                    <h3>Mapa de Origen de Ataques</h3>
+                    <div id="map"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
