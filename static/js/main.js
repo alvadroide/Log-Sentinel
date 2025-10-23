@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ipChartCanvas = document.getElementById('ip-chart');
     
     // Variables globales para el mapa y el gráfico (para destruirlos al recargar)
-    let map = null;
+    let map = null; // ¡IMPORTANTE QUE map sea global!
     let ipChart = null;
 
     uploadForm.addEventListener('submit', async (e) => {
@@ -43,6 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
             populateDashboard(data);
             dashboard.style.display = 'block';
 
+            // --- ¡LA LÍNEA DEL ARREGLO! ---
+            // Le dice al mapa: "Oye, ya eres visible, ajusta tu tamaño."
+            // Usamos un pequeño timeout para asegurar que el CSS se aplicó.
+            setTimeout(() => {
+                if (map) {
+                    map.invalidateSize();
+                }
+            }, 10); // 10ms es suficiente
+
         } catch (error) {
             console.error('Error:', error);
             errorMessage.textContent = `Error: ${error.message}`;
@@ -55,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Poblar las tarjetas de resumen
         totalFailuresDisplay.textContent = data.total_failures;
         
-        // .top_5_ips es [ ['1.2.3.4', 50], ... ]
         if (data.top_5_ips.length > 0) {
             topAttackerDisplay.textContent = `${data.top_5_ips[0][0]} (${data.top_5_ips[0][1]} intentos)`;
         } else {
@@ -115,8 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
             map.remove();
         }
         
-        // Inicializar el mapa centrado en Europa (un buen punto medio)
-        map = L.map('map').setView([47.0, 2.0], 3);
+        // Inicializar el mapa
+        map = L.map('map').setView([47.0, 2.0], 3); // Centrado en Europa
 
         // Añadir la capa de "tiles" (el fondo del mapa)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -125,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Añadir un marcador por cada IP geolocalizada
         geoData.forEach(ipData => {
-            if (ipData.lat !== 0 && ipData.lon !== 0) { // No marcar IPs desconocidas (0,0)
+            if (ipData.lat !== 0 && ipData.lon !== 0) { 
                 L.marker([ipData.lat, ipData.lon]).addTo(map)
                     .bindPopup(`<b>${ipData.ip}</b><br>${ipData.country}<br>${ipData.count} intentos.`);
             }
